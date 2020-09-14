@@ -22,6 +22,8 @@ namespace SleepOnLanLibrary
 
 		private string localMac;
 
+		private DateTime lastMessageReceived = new DateTime();
+
 		public SleepOnLan(string localMac)
 		{
 			receivePayload = new byte[1024];
@@ -60,7 +62,18 @@ namespace SleepOnLanLibrary
 
 			if (CreateLocalPayload().SequenceEqual(receivePayload))
 			{
-				OnSOLMessageReceived?.Invoke();
+				DateTime currentTime = DateTime.Now;
+				TimeSpan span = currentTime - lastMessageReceived;
+				if(span.TotalMilliseconds > 1500)
+				{
+					lastMessageReceived = currentTime;
+					OnSOLMessageReceived?.Invoke(); //prevent udp spam and only allow 1 per 3 seconds
+				}
+				else
+				{
+					Console.WriteLine("skipped 1 message...");
+				}
+				
 				InitAsyncListener(currentSocket);
 			}
 			else
