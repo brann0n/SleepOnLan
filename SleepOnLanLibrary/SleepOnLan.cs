@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -67,7 +68,14 @@ namespace SleepOnLanLibrary
 				if(span.TotalMilliseconds > 1500)
 				{
 					lastMessageReceived = currentTime;
-					OnSOLMessageReceived?.Invoke(); //prevent udp spam and only allow 1 per 3 seconds
+					//OnSOLMessageReceived?.Invoke(); //prevent udp spam and only allow 1 per 3 seconds
+
+					Delegate[] eventListeners = OnSOLMessageReceived.GetInvocationList();
+					for (int index = 0; index < eventListeners.Count(); index++)
+					{
+						var methodToInvoke = (SOLReceivedHandler)eventListeners[index];
+						methodToInvoke.BeginInvoke(EndAsyncEvent, null);
+					}
 				}
 				else
 				{
@@ -79,6 +87,21 @@ namespace SleepOnLanLibrary
 			else
 			{
 				Console.WriteLine("Received a faulty message on port 9");
+			}
+		}
+
+		private void EndAsyncEvent(IAsyncResult iar)
+		{
+			var ar = (AsyncResult)iar;
+			var invokedMethod = (SOLReceivedHandler)ar.AsyncDelegate;
+			try
+			{
+				invokedMethod.EndInvoke(iar);
+			}
+			catch
+			{
+				// Handle any exceptions that were thrown by the invoked method
+				Console.WriteLine("An event listener went kaboom!");
 			}
 		}
 

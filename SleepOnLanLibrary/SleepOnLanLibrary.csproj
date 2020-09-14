@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IdleMonitor.cs" />
+    <Compile Include="PowerstateManagement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SleepOnLan.cs" />
   </ItemGroup>
