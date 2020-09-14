@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SleepOnLanConsole", "SleepOnLanConsole\SleepOnLanConsole.csproj", "{8547CD0B-BFC2-4163-A8CD-9AD5C8DB46F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SleepOnLanLibrary", "SleepOnLanLibrary\SleepOnLanLibrary.csproj", "{71EECA93-4E43-402D-A26B-93CEAA854A7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{8547CD0B-BFC2-4163-A8CD-9AD5C8DB46F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8547CD0B-BFC2-4163-A8CD-9AD5C8DB46F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8547CD0B-BFC2-4163-A8CD-9AD5C8DB46F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71EECA93-4E43-402D-A26B-93CEAA854A7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71EECA93-4E43-402D-A26B-93CEAA854A7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71EECA93-4E43-402D-A26B-93CEAA854A7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71EECA93-4E43-402D-A26B-93CEAA854A7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

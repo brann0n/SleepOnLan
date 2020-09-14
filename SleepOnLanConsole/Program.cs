@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SleepOnLanLibrary;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -15,68 +16,17 @@ namespace SleepOnLanConsole
 	{
 		static void Main(string[] args)
 		{
-			if (!NetworkInterface.GetIsNetworkAvailable())
-			{
-				//perform the next steps, if no network, check again after 5 minutes or something 
-				//TODO: that ^
-			}
-			else
-			{
-				var macAddress = "30-9C-23-43-48-10";
-				macAddress = Regex.Replace(macAddress, "[-|:]", "");
-				Socket se = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-				int payloadIndex = 0;
-				byte[] payload = new byte[1024];
+			SleepOnLan sol = new SleepOnLan("30-9C-23-43-48-10");
+			sol.OnSOLMessageReceived += Sol_OnSOLMessageReceived;
+			sol.Start();
 
-				// Add 6 bytes with value 255 (FF) in our payload
-				for (int i = 0; i < 6; i++)
-				{
-					payload[payloadIndex] = 255;
-					payloadIndex++;
-				}
-
-				// Repeat the device MAC address sixteen times
-				for (int j = 0; j < 16; j++)
-				{
-					for (int k = 0; k < macAddress.Length; k += 2)
-					{
-						var s = macAddress.Substring(k, 2);
-						payload[payloadIndex] = byte.Parse(s, NumberStyles.HexNumber);
-						payloadIndex++;
-					}
-				}
-
-				byte[] receivePayload = new byte[1024];
-				IPEndPoint localEndPoint = new IPEndPoint(GetLocalIPAddress(), 9);
-				se.Bind(localEndPoint);
-				int receivedCount = se.Receive(receivePayload);
-
-				if (payload.SequenceEqual(receivePayload))
-				{
-					Console.WriteLine("WOL Package received in the ON Mode");
-				}
-				else
-				{
-					Console.WriteLine("Received a faulty message on port 9, ");
-				}
-
-				Console.WriteLine(receivedCount);
-				Console.WriteLine("program done");
-				Console.ReadLine();
-			}		
+			Console.WriteLine("program done");
+			Console.ReadLine();
 		}
 
-		public static IPAddress GetLocalIPAddress()
+		private static void Sol_OnSOLMessageReceived()
 		{
-			var host = Dns.GetHostEntry(Dns.GetHostName());
-			foreach (var ip in host.AddressList)
-			{
-				if (ip.AddressFamily == AddressFamily.InterNetwork)
-				{
-					return ip;
-				}
-			}
-			throw new Exception("No network adapters with an IPv4 address in the system!");
+			Console.WriteLine("Received message :)");
 		}
 	}
 }
