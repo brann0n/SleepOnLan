@@ -25,10 +25,13 @@ namespace SleepOnLanLibrary
 
 		private DateTime lastMessageReceived = new DateTime();
 
-		public SleepOnLan(string localMac)
+		private int port;
+
+		public SleepOnLan(string localMac, int port)
 		{
 			receivePayload = new byte[1024];
 			this.localMac = localMac;
+			this.port = port;
 		}
 
 
@@ -36,7 +39,7 @@ namespace SleepOnLanLibrary
 		{
 			Socket se = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-			IPEndPoint localEndPoint = new IPEndPoint(GetLocalIPAddress(), 9);
+			IPEndPoint localEndPoint = new IPEndPoint(GetLocalIPAddress(), port);
 			se.Bind(localEndPoint);
 
 			InitAsyncListener(se);
@@ -68,7 +71,7 @@ namespace SleepOnLanLibrary
 				if(span.TotalMilliseconds > 1500)
 				{
 					lastMessageReceived = currentTime;
-					//OnSOLMessageReceived?.Invoke(); //prevent udp spam and only allow 1 per 3 seconds
+					//OnSOLMessageReceived?.Invoke(); //prevent udp spam and only allow 1 per 1.5 seconds
 
 					Delegate[] eventListeners = OnSOLMessageReceived.GetInvocationList();
 					for (int index = 0; index < eventListeners.Count(); index++)
@@ -86,7 +89,7 @@ namespace SleepOnLanLibrary
 			}
 			else
 			{
-				Console.WriteLine("Received a faulty message on port 9");
+				Console.WriteLine("Received a faulty message on port " + port);
 			}
 		}
 

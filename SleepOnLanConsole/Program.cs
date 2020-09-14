@@ -18,23 +18,32 @@ namespace SleepOnLanConsole
 	{
 		static void Main(string[] args)
 		{
-			SleepOnLan sol = new SleepOnLan(Settings.Default.Mac);
+			Console.WriteLine("Sleep On LAN software by github.com/brann0n");
+			SleepOnLan sol = new SleepOnLan(Settings.Default.Mac, Settings.Default.Port);
 			sol.OnSOLMessageReceived += Sol_OnSOLMessageReceived;
 			sol.Start();
-
-			Console.WriteLine("program done");
-			Console.ReadLine();
+			Console.WriteLine("Async event listener has started, awaiting events...");
+			
+			while (true)
+			{
+				Console.WriteLine("Type 'exit' to exit");
+				string exit = Console.ReadLine();
+				if (exit == "exit")
+				{
+					break;
+				}
+			}
 		}
 
 		private static void Sol_OnSOLMessageReceived()
 		{
 			Console.WriteLine("Received WOL message...");
 			int idletime = IdleMonitor.IdleTime.Seconds;
-			if (idletime > 5)
+			if (idletime > Settings.Default.InitialIdleTime)
 			{
-				Console.WriteLine("PC has been idle for 5 seconds, waiting 15 more seconds before putting pc into sleep mode...");
-				Thread.Sleep(15000);
-				if(IdleMonitor.IdleTime.Seconds > idletime + 15)
+				Console.WriteLine("PC has been idle for more than {0}s, waiting {1}s more before putting pc into sleep mode...", Settings.Default.InitialIdleTime, Settings.Default.FinalIdleTime);
+				Thread.Sleep(Settings.Default.FinalIdleTime * 1000);
+				if(IdleMonitor.IdleTime.Seconds > idletime + Settings.Default.FinalIdleTime)
 				{
 					PowerstateManagement.Sleep();
 				}
@@ -45,7 +54,7 @@ namespace SleepOnLanConsole
 			}
 			else
 			{
-				Console.WriteLine("pc was not idle for 5 second :(");
+				Console.WriteLine("pc was not idle for {0}s :(", Settings.Default.InitialIdleTime);
 			}
 		}
 	}

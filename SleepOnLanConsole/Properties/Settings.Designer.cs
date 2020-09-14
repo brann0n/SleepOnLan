@@ -34,5 +34,41 @@ namespace SleepOnLanConsole.Properties {
                 this["Mac"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        public int Port {
+            get {
+                return ((int)(this["Port"]));
+            }
+            set {
+                this["Port"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int InitialIdleTime {
+            get {
+                return ((int)(this["InitialIdleTime"]));
+            }
+            set {
+                this["InitialIdleTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int FinalIdleTime {
+            get {
+                return ((int)(this["FinalIdleTime"]));
+            }
+            set {
+                this["FinalIdleTime"] = value;
+            }
+        }
     }
 }
