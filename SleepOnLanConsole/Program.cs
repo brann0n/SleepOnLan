@@ -43,7 +43,8 @@ namespace SleepOnLanConsole
 			{
 				Console.WriteLine("PC has been idle for more than {0}s, waiting {1}s more before putting pc into sleep mode...", Settings.Default.InitialIdleTime, Settings.Default.FinalIdleTime);
 				Thread.Sleep(Settings.Default.FinalIdleTime * 1000);
-				if(IdleMonitor.IdleTime.Seconds > idletime + Settings.Default.FinalIdleTime)
+				int finalIdleTime = IdleMonitor.IdleTime.Seconds;
+				if (finalIdleTime >= idletime + Settings.Default.FinalIdleTime)
 				{
 					PowerstateManagement.Sleep();
 				}

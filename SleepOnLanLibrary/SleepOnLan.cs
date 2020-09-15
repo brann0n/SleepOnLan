@@ -138,14 +138,23 @@ namespace SleepOnLanLibrary
 
 		private IPAddress GetLocalIPAddress()
 		{
-			var host = Dns.GetHostEntry(Dns.GetHostName());
-			foreach (var ip in host.AddressList)
+			NetworkInterface[] Interfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+			foreach (NetworkInterface Interface in Interfaces)
 			{
-				if (ip.AddressFamily == AddressFamily.InterNetwork)
+				IPInterfaceProperties props = Interface.GetIPProperties();
+				if (props.GatewayAddresses.Count > 0 && Interface.OperationalStatus == OperationalStatus.Up)
 				{
-					return ip;
+					foreach(var ip in props.UnicastAddresses)
+					{
+						if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+						{
+							return ip.Address;
+						}
+					}
 				}
 			}
+
 			throw new Exception("No network adapters with an IPv4 address in the system!");
 		}
 	}
