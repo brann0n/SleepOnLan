@@ -19,6 +19,8 @@ The first release is not really usefull the program starts in a console and need
 3. after changing the mac run the only .exe in the folder, the program tells you that its running, try to send a WOL package to your pc.
 4. if the pc has not been touched for 5 seconds upon receiving the message, it waits for another 15 seconds before turning the pc into sleep mode.
 
+Tip: you can find your mac adres by runnig "ipconfig /all" in a console and searching for Physical Address.
+
 ## Configurables
 The program has a few configurable options
 1. the MAC address, default is a fake mac address as a placeholder.
