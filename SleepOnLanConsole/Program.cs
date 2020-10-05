@@ -38,9 +38,10 @@ namespace SleepOnLanConsole
 			sol.Start();
 			Console.WriteLine("Async event listener has started, awaiting events...");
 			ConsoleViewHandler.Hide();
+			manager.SendNotification("Sleep On LAN is now hidden and monitoring WOL packages");
 			while (true)
 			{
-				Console.WriteLine("Type 'exit' to exit");
+				Console.WriteLine("Type 'exit' to exit, or use the contextmenu from the notification area");
 				string exit = Console.ReadLine();
 				if (exit == "exit")
 				{
