@@ -48,5 +48,10 @@ namespace SleepOnLanLibrary
 
 			hidden = true;
 		}
+
+		public static bool IsHidden()
+        {
+			return hidden;
+        }
 	}
 }

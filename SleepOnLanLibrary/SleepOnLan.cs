@@ -15,17 +15,18 @@ namespace SleepOnLanLibrary
 	public class SleepOnLan
 	{
 
-		public delegate void SOLReceivedHandler();
+		public delegate void SOLEventHandler();
 
-		public event SOLReceivedHandler OnSOLMessageReceived;
+		public event SOLEventHandler OnSOLMessageReceived;
+		public event SOLEventHandler OnNoInternetConnectionAvailable;
 
-		private byte[] receivePayload;
+		private readonly byte[] receivePayload;
 
-		private string localMac;
+		private readonly string localMac;
 
 		private DateTime lastMessageReceived = new DateTime();
 
-		private int port;
+		private readonly int port;
 
 		public SleepOnLan(string localMac, int port)
 		{
@@ -56,6 +57,7 @@ namespace SleepOnLanLibrary
 			else
 			{
 				//TODO: throw the not connected event.
+				OnNoInternetConnectionAvailable?.Invoke();
 			}		
 		}
 
@@ -76,7 +78,7 @@ namespace SleepOnLanLibrary
 					Delegate[] eventListeners = OnSOLMessageReceived.GetInvocationList();
 					for (int index = 0; index < eventListeners.Count(); index++)
 					{
-						var methodToInvoke = (SOLReceivedHandler)eventListeners[index];
+						var methodToInvoke = (SOLEventHandler)eventListeners[index];
 						methodToInvoke.BeginInvoke(EndAsyncEvent, null);
 					}
 				}
@@ -96,7 +98,7 @@ namespace SleepOnLanLibrary
 		private void EndAsyncEvent(IAsyncResult iar)
 		{
 			var ar = (AsyncResult)iar;
-			var invokedMethod = (SOLReceivedHandler)ar.AsyncDelegate;
+			var invokedMethod = (SOLEventHandler)ar.AsyncDelegate;
 			try
 			{
 				invokedMethod.EndInvoke(iar);
@@ -154,7 +156,7 @@ namespace SleepOnLanLibrary
 					}
 				}
 			}
-
+			
 			throw new Exception("No network adapters with an IPv4 address in the system!");
 		}
 	}

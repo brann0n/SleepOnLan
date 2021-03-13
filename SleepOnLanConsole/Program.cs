@@ -35,6 +35,7 @@ namespace SleepOnLanConsole
 			}).Start();
 			
 			sol.OnSOLMessageReceived += Sol_OnSOLMessageReceived;
+            sol.OnNoInternetConnectionAvailable += Sol_OnNoInternetConnectionAvailable;
 			sol.Start();
 			Console.WriteLine("Async event listener has started, awaiting events...");
 			ConsoleViewHandler.Hide();
@@ -50,7 +51,14 @@ namespace SleepOnLanConsole
 			}
 		}
 
-		private void Sol_OnSOLMessageReceived()
+        private void Sol_OnNoInternetConnectionAvailable()
+        {
+			Console.WriteLine("No network connection (IPv4 with a gateway) available at the moment.");
+			Console.WriteLine("Please restart the program once you have a working network connection.");
+			manager.SendNotification("Network unavailable, please refer to the console for more information.");
+        }
+
+        private void Sol_OnSOLMessageReceived()
 		{
 			Console.WriteLine("Received WOL message...");
 			int idletime = IdleMonitor.IdleTime.Seconds;
@@ -66,6 +74,7 @@ namespace SleepOnLanConsole
 				}
 				else
 				{
+					manager.SendNotification("Request was cancelled by user.");
 					Console.WriteLine("Pc was used during idle period...");
 				}
 			}

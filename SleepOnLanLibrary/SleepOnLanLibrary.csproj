@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoStartManager.cs" />
     <Compile Include="ConsoleViewHandler.cs" />
     <Compile Include="IdleMonitor.cs" />
     <Compile Include="NotificationManager.cs" />

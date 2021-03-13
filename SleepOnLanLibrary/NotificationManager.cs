@@ -10,56 +10,78 @@ namespace SleepOnLanLibrary
 {
 	public class NotificationManager
 	{
-		private NotifyIcon manager;
-		private ContextMenu menu;
+		private readonly NotifyIcon Manager;
+		private readonly ContextMenu Menu;
+		private readonly MenuItem ShowHideItem;
+		private readonly MenuItem AutoStartItem;
+
 		public NotificationManager()
 		{
 			//build the context menu
-			menu = new ContextMenu();
+			Menu = new ContextMenu();
 
 			//build the menu items
-			MenuItem ShowHideItem = new MenuItem
+			ShowHideItem = new MenuItem
 			{
 				Index = 0,
-				Text = "Show/Hide Console",
+				Text = "Console Visible",
 				DefaultItem = true
+			};
+
+			AutoStartItem = new MenuItem
+			{
+				Index = 1,
+				Text = "Autostart"
 			};
 
 			MenuItem ExitApplication = new MenuItem
 			{
-				Index = 1,
+				Index = 2,
 				Text = "Exit App"
-			};
+			};			
 
-			menu.MenuItems.AddRange(new MenuItem[] {
+			Menu.MenuItems.AddRange(new MenuItem[] {
 				ShowHideItem,
+				AutoStartItem,
+				new MenuItem("-"), //seperator bar
 				ExitApplication
 			});
 
 			//create the icon
-			manager = new NotifyIcon
+			Manager = new NotifyIcon
 			{
 				Icon = new Icon("appicon.ico"),
 				Text = "Sleep On LAN",
-				ContextMenu = menu,
+				ContextMenu = Menu,
 				Visible = true
 			};
+			
+			//event that takes care of renaming titles in the menu before showing
+            Menu.Popup += Menu_Popup;		
 
 			//assign the events
 			ShowHideItem.Click += (e, o) => ConsoleViewHandler.Toggle();
 			ExitApplication.Click += (e, o) => Environment.Exit(0);
-			manager.DoubleClick += Manager_DoubleClick;
+			AutoStartItem.Click += (e, o) => AutoStartManager.SetAutoStart(!AutoStartManager.IsAutoStartEnabled());
+
+			Manager.DoubleClick += Manager_DoubleClick;
 		}
 
-		private void Manager_DoubleClick(object sender, EventArgs e)
+        private void Menu_Popup(object sender, EventArgs e)
+        {
+			ShowHideItem.Checked = !ConsoleViewHandler.IsHidden();
+			AutoStartItem.Checked = AutoStartManager.IsAutoStartEnabled();
+        }
+
+        private void Manager_DoubleClick(object sender, EventArgs e)
 		{
 			ConsoleViewHandler.Show();
 		}
 
 		public void SendNotification(string text)
 		{
-			manager.BalloonTipText = text;
-			manager.ShowBalloonTip(2000, "Sleep On LAN", text, ToolTipIcon.Info);
+			Manager.BalloonTipText = text;
+			Manager.ShowBalloonTip(1500, "Sleep On LAN", text, ToolTipIcon.Info);
 		}
 	}
 }
