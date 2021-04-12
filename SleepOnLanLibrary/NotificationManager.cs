@@ -50,7 +50,7 @@ namespace SleepOnLanLibrary
 			//create the icon
 			Manager = new NotifyIcon
 			{
-				Icon = new Icon("appicon.ico"),
+				Icon = new Icon(AppDomain.CurrentDomain.BaseDirectory + "\\appicon.ico"),
 				Text = "Sleep On LAN",
 				ContextMenu = Menu,
 				Visible = true

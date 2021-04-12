@@ -85,14 +85,14 @@ namespace SleepOnLanLibrary
 				else
 				{
 					Console.WriteLine("skipped 1 message...");
-				}
-				
-				InitAsyncListener(currentSocket);
+				}			
 			}
 			else
 			{
-				Console.WriteLine("Received a faulty message on port " + port);
+				Console.WriteLine("Received a faulty magic packet on port " + port);
 			}
+
+			InitAsyncListener(currentSocket);
 		}
 
 		private void EndAsyncEvent(IAsyncResult iar)

@@ -20,9 +20,19 @@ namespace SleepOnLanConsole
 		private NotificationManager manager;
 		static void Main(string[] args)
 		{
-			new Thread(delegate () {
-				new Program();
-			}).Start();
+			try
+			{
+				Thread t = new Thread(
+				
+					() => new Program()
+				);
+				t.Start();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+				Console.ReadLine();
+			}
 		}
 
 		private Program()
@@ -49,6 +59,7 @@ namespace SleepOnLanConsole
 					break;
 				}
 			}
+			Environment.Exit(0);
 		}
 
         private void Sol_OnNoInternetConnectionAvailable()
