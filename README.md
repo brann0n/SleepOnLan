@@ -10,6 +10,7 @@ This is where WOL packages are sent to by default, when the program receives a p
 Once this has been verified it throws an event that then checks the users idle time.
 If you have not moved the mouse or touched the keyboard for 5 seconds before sending the WOL package the program activates.
 Once activated it waits for 15 seconds before checking if the user has stopped being idle, if this is the case the program cancels the sleep activity.
+From release `1.1.5` there is also an option to enter your homeassistant source ip, when the program receives a magic packet from this ip address it will turn the pc to sleep right away.
 
 ## How to use
 The first release is not really usefull the program starts in a console and needs to be kept running for this to work.
@@ -23,7 +24,8 @@ Tip: you can find your mac adres by runnig "ipconfig /all" in a console and sear
 
 ## Configurables
 The program has a few configurable options
-1. the MAC address, default is a fake mac address as a placeholder.
-2. the WOL port to use, 9 is default here.
-3. the initial idle time, 5s is default here.
-4. the final idle time (time after intitial idle time), 15s is default here.
+1. The MAC address, default is a fake mac address as a placeholder.
+2. The WOL port to use, 9 is default here.
+3. The initial idle time, 5s is default here.
+4. The final idle time (time after intitial idle time), 15s is default here.
+5. Immediate action source device. A WOL package from this device will be acted upon directly without timeout.
