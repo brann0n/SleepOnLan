@@ -15,12 +15,13 @@ namespace SleepOnLanLibrary
 	public class SleepOnLan
 	{
 
-		public delegate void SOLEventHandler();
+		public delegate void SOLEventHandler(string source);
+		public delegate void SOLErrorEventHandler();
 
 		public event SOLEventHandler OnSOLMessageReceived;
-		public event SOLEventHandler OnNoInternetConnectionAvailable;
+		public event SOLErrorEventHandler OnNoInternetConnectionAvailable;
 
-		private readonly byte[] receivePayload;
+		
 
 		private readonly string localMac;
 
@@ -30,7 +31,6 @@ namespace SleepOnLanLibrary
 
 		public SleepOnLan(string localMac, int port)
 		{
-			receivePayload = new byte[1024];
 			this.localMac = localMac;
 			this.port = port;
 		}
@@ -38,48 +38,47 @@ namespace SleepOnLanLibrary
 
 		public void Start()
 		{
-			Socket se = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+			UdpClient uc = new UdpClient(port, AddressFamily.InterNetwork)
+			{
+				EnableBroadcast = true
+			};
 
-			IPEndPoint localEndPoint = new IPEndPoint(GetLocalIPAddress(), port);
-			se.Bind(localEndPoint);
-
-			InitAsyncListener(se);
+			InitAsyncListener(uc);
 		}
 
-
-		private void InitAsyncListener(Socket s)
+		private void InitAsyncListener(UdpClient s)
 		{
 			//check for internet connection :)
 			if (NetworkInterface.GetIsNetworkAvailable())
 			{
-				s.BeginReceive(receivePayload, 0, 1024, SocketFlags.None, new AsyncCallback(SOLReceivedCallback), s);
+				s.BeginReceive(new AsyncCallback(SOLReceivedCallback), s);
 			}
 			else
 			{
-				//TODO: throw the not connected event.
 				OnNoInternetConnectionAvailable?.Invoke();
 			}		
 		}
 
 		private void SOLReceivedCallback(IAsyncResult result)
 		{
-			Socket currentSocket = (Socket)result.AsyncState;
-			int bytesReceived = currentSocket.EndReceive(result);
-
-			if (CreateLocalPayload().SequenceEqual(receivePayload))
+			IPEndPoint remoteEndpoint = new IPEndPoint(IPAddress.Any, port);
+			UdpClient currentSocket = (UdpClient)result.AsyncState;
+			byte[] receivePayload = currentSocket.EndReceive(result, ref remoteEndpoint);
+			byte[] expectedPayload = CreateLocalPayload();
+			if (expectedPayload.SequenceEqual(receivePayload))
 			{
 				DateTime currentTime = DateTime.Now;
 				TimeSpan span = currentTime - lastMessageReceived;
 				if(span.TotalMilliseconds > 1500)
 				{
+					//prevent udp spam and only allow 1 per 1.5 seconds
 					lastMessageReceived = currentTime;
-					//OnSOLMessageReceived?.Invoke(); //prevent udp spam and only allow 1 per 1.5 seconds
 
 					Delegate[] eventListeners = OnSOLMessageReceived.GetInvocationList();
 					for (int index = 0; index < eventListeners.Count(); index++)
 					{
 						var methodToInvoke = (SOLEventHandler)eventListeners[index];
-						methodToInvoke.BeginInvoke(EndAsyncEvent, null);
+						methodToInvoke.BeginInvoke(remoteEndpoint.Address.ToString(), EndAsyncEvent, null);
 					}
 				}
 				else
@@ -89,7 +88,7 @@ namespace SleepOnLanLibrary
 			}
 			else
 			{
-				Console.WriteLine("Received a faulty magic packet on port " + port);
+				Console.WriteLine("Received a dirty packet on port " + port);
 			}
 
 			InitAsyncListener(currentSocket);
@@ -115,7 +114,7 @@ namespace SleepOnLanLibrary
 			var macAddress = localMac;
 			macAddress = Regex.Replace(macAddress, "[-|:]", "");
 			int payloadIndex = 0;
-			byte[] payload = new byte[1024];
+			byte[] payload = new byte[102];
 
 			// Add 6 bytes with value 255 (FF) in our payload
 			for (int i = 0; i < 6; i++)

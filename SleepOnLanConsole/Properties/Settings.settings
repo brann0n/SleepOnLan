@@ -14,5 +14,8 @@
     <Setting Name="FinalIdleTime" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">15</Value>
     </Setting>
+    <Setting Name="HomeAssistant" Type="System.String" Scope="User">
+      <Value Profile="(Default)">192.168.2.101</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
