@@ -48,8 +48,11 @@ namespace SleepOnLanConsole
             sol.OnNoInternetConnectionAvailable += Sol_OnNoInternetConnectionAvailable;
 			sol.Start();
 			Console.WriteLine("Async event listener has started, awaiting events...");
+
+#if !DEBUG
 			ConsoleViewHandler.Hide();
 			manager.SendNotification("Sleep On LAN is now hidden and monitoring WOL packages");
+#endif
 			while (true)
 			{
 				Console.WriteLine("Type 'exit' to exit, or use the contextmenu from the notification area");
@@ -69,12 +72,22 @@ namespace SleepOnLanConsole
 			manager.SendNotification("Network unavailable, please refer to the console for more information.");
         }
 
-        private void Sol_OnSOLMessageReceived()
+        private void Sol_OnSOLMessageReceived(string source)
 		{
-			Console.WriteLine("Received WOL message...");
+			Console.WriteLine($"Received WOL message from device {source}");
 			int idletime = IdleMonitor.IdleTime.Seconds;
+			bool isHomeAssistant = source == Settings.Default.HomeAssistant;
+			if (isHomeAssistant) Console.WriteLine("Source == HomeAssistant"); else Console.WriteLine("Source != HomeAssistant");
 			if (idletime > Settings.Default.InitialIdleTime)
 			{
+				if(isHomeAssistant)
+				{
+					Console.WriteLine($"Request was sent from registered HomeAssistant device, bypassing {Settings.Default.FinalIdleTime}s timeout.");
+					manager.SendNotification($"HomeAssistant put pc into sleep mode.");
+					PowerstateManagement.Sleep();
+					return;
+				}
+
 				Console.WriteLine("PC has been idle for more than {0}s, waiting {1}s more before putting pc into sleep mode...", Settings.Default.InitialIdleTime, Settings.Default.FinalIdleTime);
 				manager.SendNotification($"Putting PC into sleep mode in {Settings.Default.FinalIdleTime} seconds");
 				Thread.Sleep(Settings.Default.FinalIdleTime * 1000);
